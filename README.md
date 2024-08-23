@@ -72,3 +72,9 @@ pip install PyQt6 pandas numpy
 - El archivo `estudiantes.csv` es crucial para que `menuOpciones.py` funcione correctamente, ya que contiene la lista de estudiantes registrados.
 - La funcionalidad para modificar y enviar calificaciones está en desarrollo y podría no estar completamente operativa.
 
+## Imagenes de ejemplo de funcionamiento del codigo:
+
+[![menu-Principal.jpg](https://i.postimg.cc/pL8nZPCy/menu-Principal.jpg)](https://postimg.cc/FYrRF52Q)
+
+[![calificaciones-Ingles.jpg](https://i.postimg.cc/J4Y9qL0w/calificaciones-Ingles.jpg)](https://postimg.cc/9rT8msy1)
+
