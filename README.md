@@ -1,2 +1,2 @@
-# gesti-n-estudiantes-y-calificaciones
+# gestion-estudiantes-y-calificaciones
 Gestión de estudiantes y sus calificaciones
