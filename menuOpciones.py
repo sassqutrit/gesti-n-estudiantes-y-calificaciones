@@ -8,34 +8,42 @@ from PyQt6.QtWidgets import QLineEdit, QLabel, QMessageBox, QComboBox, QHBoxLayo
 class RegistroCalificaciones(QWidget):
     def __init__(self):
         super().__init__()
+        # Carga la base de datos de estudiantes desde un archivo CSV
+        # Asigna el método a una variable general, para su uso posterior
         self.base = self.cargar_base_estudiantes()
-        self.notas = pd.DataFrame(columns=['Key', 'Materia', 'Nota'])  # Inicializar con columnas correctas
-
+        # Inicializar con columnas correctas
+        # Inicializa el DataFrame para las notas
+        self.notas = pd.DataFrame(columns=['Key', 'Materia', 'Nota'])
+        # Inicializa la interfaz gráfica del usuario
         self.initUI()
 
     def cargar_base_estudiantes(self):
+        # Carga la base de datos de estudiantes si el archivo existe
         if os.path.exists('estudiantes.csv'):
             return pd.read_csv('estudiantes.csv')
         else:
             QMessageBox.critical(self, 'Error', 'No se encontró el archivo estudiantes.csv.')
+            # Cierra la aplicación si no se encuentra el archivo
             self.close()
             return pd.DataFrame()
 
     def initUI(self):
+        # Título de la ventana
         self.setWindowTitle('Registro de Calificaciones')
 
         self.layout = QVBoxLayout()
 
-        # Crear el QStackedWidget
+        # Crear el QStackedWidget para cambiar entre diferentes pantallas
         self.stackedWidget = QStackedWidget()
 
-        # Crear la página del menú
+        # Crear la página del menú principal
         menu_widget = QWidget()
         menu_layout = QVBoxLayout()
 
         menu_label = QLabel('Menu de Opciones:', self)
         menu_layout.addWidget(menu_label)
 
+        # Botones del menú para realizar diferentes acciones
         self.btnIngresar = QPushButton('1. Ingresar calificaciones', self)
         self.btnIngresar.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(1))
         menu_layout.addWidget(self.btnIngresar)
@@ -67,6 +75,7 @@ class RegistroCalificaciones(QWidget):
         self.registro_widget = QWidget()
         registro_layout = QVBoxLayout()
 
+        # Selección de la materia
         materia_layout = QHBoxLayout()
         materia_label = QLabel('Materia:', self)
         self.materia_input = QComboBox(self)
@@ -76,6 +85,7 @@ class RegistroCalificaciones(QWidget):
         materia_layout.addWidget(self.materia_input)
         registro_layout.addLayout(materia_layout)
 
+        # Selección del estudiante basado en la materia seleccionada
         estudiante_layout = QHBoxLayout()
         estudiante_label = QLabel('Estudiante:', self)
         self.estudiante_input = QComboBox(self)
@@ -83,6 +93,7 @@ class RegistroCalificaciones(QWidget):
         estudiante_layout.addWidget(self.estudiante_input)
         registro_layout.addLayout(estudiante_layout)
 
+        # Campo para ingresar la calificación
         calificacion_layout = QHBoxLayout()
         calificacion_label = QLabel('Calificación:', self)
         self.calificacion_input = QLineEdit(self)
@@ -90,10 +101,12 @@ class RegistroCalificaciones(QWidget):
         calificacion_layout.addWidget(self.calificacion_input)
         registro_layout.addLayout(calificacion_layout)
 
+        # Botón para registrar la calificación
         self.calificar_btn = QPushButton('Calificar', self)
         self.calificar_btn.clicked.connect(self.calificar)
         registro_layout.addWidget(self.calificar_btn)
 
+        # Botón para volver al menú principal
         volver_btn = QPushButton('Volver al menú', self)
         volver_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         registro_layout.addWidget(volver_btn)
@@ -104,18 +117,21 @@ class RegistroCalificaciones(QWidget):
         self.layout.addWidget(self.stackedWidget)
         self.setLayout(self.layout)
 
+        # Actualiza la lista de estudiantes según la materia seleccionada
         self.actualizarEstudiantes()
 
     def actualizarEstudiantes(self):
         self.estudiante_input.clear()
         materia = self.materia_input.currentText()
         if not self.base.empty:
+            # Añade a la lista de estudiantes aquellos que están inscritos en la materia seleccionada
             for i in range(len(self.base)):
                 if materia in self.base.loc[i, 'Materias']:
                     estudiante = f"{self.base.loc[i, 'Key']} - {self.base.loc[i, 'Nombre']} {self.base.loc[i, 'Apellido']}"
                     self.estudiante_input.addItem(estudiante)
     
     def calificar(self):
+        # Verifica si se ha seleccionado un estudiante y si la calificación es válida
         estudiante = self.estudiante_input.currentText()
         if not estudiante:
             QMessageBox.warning(self, 'Error', 'Por favor, seleccione un estudiante.')
@@ -132,6 +148,8 @@ class RegistroCalificaciones(QWidget):
         materia = self.materia_input.currentText()
 
         # Verificar que el DataFrame tenga las columnas correctas antes de eliminar registros
+        # Elimina cualquier calificación existente para el mismo estudiante en la misma materia
+        # antes de registrar la nueva calificación
         if 'Key' in self.notas.columns and 'Materia' in self.notas.columns:
             # Filtrar para eliminar cualquier calificación existente para el mismo estudiante en la misma materia
             self.notas = self.notas[~((self.notas['Key'] == int(key)) & (self.notas['Materia'] == materia))]
@@ -158,10 +176,12 @@ class RegistroCalificaciones(QWidget):
             archivo = f'notas_{materia.lower()}.csv'
             
             if os.path.exists(archivo):
-                # Si el archivo ya existe, cargar el archivo existente
+                # Si el archivo ya existe, carga el archivo existente y elimina las calificaciones antiguas
+                # para los mismos estudiantes en la misma materia
                 notas_existentes = pd.read_csv(archivo)
                 # Eliminar las calificaciones existentes en el CSV para los estudiantes de la misma materia
-                notas_existentes = notas_existentes[~((notas_existentes['Key'].isin(notas_materia_actual['Key'])) & (notas_existentes['Materia'] == materia))]
+                notas_existentes = notas_existentes[~((notas_existentes['Key'].isin(
+                    notas_materia_actual['Key'])) & (notas_existentes['Materia'] == materia))]
                 # Concatenar las nuevas notas de la materia actual con las restantes
                 notas_materia_actual = pd.concat([notas_existentes, notas_materia_actual], ignore_index=True)
             
@@ -174,6 +194,7 @@ class RegistroCalificaciones(QWidget):
             
 
     def verCalificaciones(self):
+        # Muestra las calificaciones guardadas para la materia seleccionada
         materia = self.materia_input.currentText()
         archivo = f'notas_{materia.lower()}.csv'
         if os.path.exists(archivo):
@@ -185,13 +206,17 @@ class RegistroCalificaciones(QWidget):
             QMessageBox.warning(self, 'Error', f'No hay calificaciones guardadas para la materia {materia}.')
     
     def modificarCalificaciones(self):
+        # Funcionalidad para modificar calificaciones, aún en desarrollo
         QMessageBox.information(self, 'Modificar Calificaciones', 'Funcionalidad en desarrollo.')
     
     def enviarCalificaciones(self):
+        # Simula el envío de calificaciones
         QMessageBox.information(self, 'Enviar Calificaciones', 'Calificaciones enviadas exitosamente.')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = RegistroCalificaciones()
+    # Muestra la ventana de la aplicación
     window.show()
+    # Ejecuta la aplicación
     sys.exit(app.exec())
