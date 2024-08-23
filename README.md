@@ -1,7 +1,3 @@
-# gestion-estudiantes-y-calificaciones
-Gestión de estudiantes y sus calificaciones
-# README
-
 ## Descripción General
 
 Este proyecto consiste en una aplicación para la gestión de estudiantes y sus calificaciones, utilizando la biblioteca `PyQt6` para la creación de la interfaz gráfica de usuario (GUI). La aplicación está dividida en dos módulos principales:
