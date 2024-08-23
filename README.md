@@ -56,3 +56,19 @@ Para ejecutar estos archivos, necesitas tener instalado:
 Puedes instalar las dependencias necesarias usando pip:
 
 pip install PyQt6 pandas numpy
+
+## Ejecución
+
+1. Ejecuta primero `registroEstudiantes.py` para registrar los estudiantes. Asegúrate de que el archivo `estudiantes.csv` se crea correctamente.
+   
+   python registroEstudiantes.py
+   
+3. Luego, ejecuta menuOpciones.py para gestionar las calificaciones de los estudiantes.
+
+   python menuOpciones.py
+
+## Notas
+
+- El archivo `estudiantes.csv` es crucial para que `menuOpciones.py` funcione correctamente, ya que contiene la lista de estudiantes registrados.
+- La funcionalidad para modificar y enviar calificaciones está en desarrollo y podría no estar completamente operativa.
+
